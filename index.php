@@ -1,5 +1,5 @@
 <?php
-  $file = '/var/www/html/Enc.exe'; // 파일의 전체 경로
+  $file = 'Enc.exe'; // 파일의 전체 경로
   $file_name = 'Enc.exe'; // 저장될 파일 이름
 
   header('Content-type: application/octet-stream');
